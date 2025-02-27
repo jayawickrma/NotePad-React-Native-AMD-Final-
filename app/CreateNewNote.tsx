@@ -4,7 +4,7 @@ export default function Tab() {
     return (
         <View style={styles.container}>
 
-            <Button title={"Create new Note"}></Button>
+            <Button title={"Create new Note"}/>
         </View>
     );
 }

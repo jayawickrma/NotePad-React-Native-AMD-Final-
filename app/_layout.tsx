@@ -13,9 +13,9 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="newNote"  // Updated name for this tab
+                name="newNote"
                 options={{
-                    title: 'New Note',  // Set the title of the tab
+                    title: 'New Note',
                     tabBarIcon: ({ color }) => <FontAwesome size={28} name="sticky-note" color={color} />,
                 }}
             />
