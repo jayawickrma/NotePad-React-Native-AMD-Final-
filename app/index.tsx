@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllPosts } from '@/app/Slices/PostSlice';
+import { RootState, AppDispatch } from "./Store/Store";
 
 // Define the Note type
 interface Note {
@@ -11,18 +14,48 @@ interface Note {
     color: string;
 }
 
-// Sample data - replace with your actual data source
-const sampleNotes: Note[] = [
-    { id: '1', title: 'Shopping List', content: 'Milk, eggs, bread, fruits', date: '2025-02-25', color: '#FFD7D7' },
-    { id: '2', title: 'Meeting Notes', content: 'Discuss Q1 goals with the team', date: '2025-02-26', color: '#D7EFFF' },
-    { id: '3', title: 'Ideas', content: 'App features: dark mode, cloud sync', date: '2025-02-27', color: '#D7FFD7' },
-    { id: '4', title: 'Books to Read', content: 'Atomic Habits, Deep Work', date: '2025-02-28', color: '#FFFDD7' },
-];
-
 export default function Tab() {
-    const [notes, setNotes] = useState<Note[]>(sampleNotes);
+    const dispatch = useDispatch<AppDispatch>();
+    const { posts, loading, error } = useSelector((state: RootState) => state.post);
+
+    const [notes, setNotes] = useState<Note[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredNotes, setFilteredNotes] = useState<Note[]>(notes);
+
+    // Fetch all posts when component mounts
+    useEffect(() => {
+        fetchAllPosts();
+    }, []);
+
+    // Convert posts to notes format when posts change
+    useEffect(() => {
+        if (posts && posts.length > 0) {
+            // Convert posts to notes format
+            const formattedNotes: Note[] = posts.map(post => ({
+                id: post.id.toString(),
+                title: post.title || 'Untitled',
+                content: post.content || '',
+                date: new Date().toISOString().split('T')[0], // Today's date as fallback
+                color: getRandomColor(), // Function to assign colors
+            }));
+            setNotes(formattedNotes);
+        }
+    }, [posts]);
+
+    // Function to fetch all posts
+    const fetchAllPosts = async () => {
+        try {
+            await dispatch(getAllPosts()).unwrap();
+        } catch (err) {
+            console.error('Failed to fetch posts:', err);
+        }
+    };
+
+    // Function to get random pastel color
+    const getRandomColor = () => {
+        const colors = ['#FFD7D7', '#D7EFFF', '#D7FFD7', '#FFFDD7', '#EFD7FF'];
+        return colors[Math.floor(Math.random() * colors.length)];
+    };
 
     useEffect(() => {
         if (searchQuery) {
@@ -93,7 +126,22 @@ export default function Tab() {
                 ) : null}
             </View>
 
-            {filteredNotes.length === 0 ? (
+            {loading ? (
+                <View style={styles.emptyState}>
+                    <Text>Loading notes...</Text>
+                </View>
+            ) : error ? (
+                <View style={styles.emptyState}>
+                    <Text style={[styles.emptyStateText, { color: 'red' }]}>
+                        Error loading notes: {error}
+                    </Text>
+                    <TouchableOpacity
+                        style={styles.retryButton}
+                        onPress={fetchAllPosts}>
+                        <Text style={styles.retryText}>Retry</Text>
+                    </TouchableOpacity>
+                </View>
+            ) : filteredNotes.length === 0 ? (
                 <View style={styles.emptyState}>
                     <Ionicons name="document-text-outline" size={60} color="#ccc" />
                     <Text style={styles.emptyStateText}>No notes found</Text>
@@ -105,6 +153,8 @@ export default function Tab() {
                     keyExtractor={(item) => item.id}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.listContainer}
+                    refreshing={loading}
+                    onRefresh={fetchAllPosts}
                 />
             )}
         </View>
@@ -112,6 +162,19 @@ export default function Tab() {
 }
 
 const styles = StyleSheet.create({
+    // ... existing styles
+    retryButton: {
+        marginTop: 16,
+        backgroundColor: '#6200ee',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 8,
+    },
+    retryText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
+    // Keep all other existing styles
     container: {
         flex: 1,
         backgroundColor: '#f5f5f5',

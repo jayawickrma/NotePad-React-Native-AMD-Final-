@@ -1,17 +1,61 @@
-import React, { useState } from 'react';
-import {postModel} from  './Model/PostModel'
-import { View, StyleSheet, Button, TextInput, Text } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { postModel } from './Model/PostModel';
+import { View, StyleSheet, Button, TextInput, Text, Alert, ActivityIndicator } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { createPost, fetchPosts } from '@/app/Slices/PostSlice';
+import { RootState, AppDispatch } from "./Store/Store";
 
 export default function Tab() {
+    const dispatch = useDispatch<AppDispatch>();
+    const { posts, loading, error } = useSelector((state: RootState) => state.post);
+
     const [title, setTitle] = useState('');
     const [note, setNote] = useState('');
-    const [savedNotes, setSavedNotes] = useState([]);
+    const [savedNotes, setSavedNotes] = useState<postModel[]>([]);
 
-    const handleSaveNote = () => {
+    // Fetch posts when component mounts
+    useEffect(() => {
+        dispatch(fetchPosts());
+    }, [dispatch]);
+
+    // Update local state when posts change in Redux store
+    useEffect(() => {
+        if (posts && posts.length > 0) {
+            setSavedNotes(posts);
+        }
+    }, [posts]);
+
+    const handleSaveNote = async () => {
         if (title.trim() && note.trim()) {
-            setSavedNotes(prevState => prevState);
-            setTitle('');
-            setNote('');
+            try {
+                // Create a new post object
+                const newPost: postModel = {
+                    title: title.trim(),
+                    content: note.trim(),
+                    id: Date.now(),
+                    authorId: 1,
+                };
+
+                // Dispatch the createPost action
+                await dispatch(createPost(newPost)).unwrap();
+
+                // Clear form after successful save
+                setTitle('');
+                setNote('');
+
+                // Show success message
+                Alert.alert("Success", "Note saved successfully!");
+
+                // Refresh the posts list (optional)
+                dispatch(fetchPosts());
+
+            } catch (err) {
+                // Handle error
+                console.error("Failed to save note:", err);
+                Alert.alert("Error", "Failed to save note. Please try again.");
+            }
+        } else {
+            Alert.alert("Error", "Title and content cannot be empty.");
         }
     };
 
@@ -40,19 +84,23 @@ export default function Tab() {
                 />
 
                 <Button
-                    title="Save Note"
+                    title={loading ? "Saving..." : "Save Note"}
                     onPress={handleSaveNote}
                     color="#8a2be2"
+                    disabled={loading || !title.trim() || !note.trim()}
                 />
+
+                {loading && <ActivityIndicator style={styles.loader} color="#8a2be2" />}
+                {error && <Text style={styles.errorText}>{error}</Text>}
             </View>
 
             {savedNotes.length > 0 && (
                 <View style={styles.notesContainer}>
                     <Text style={styles.savedNotesHeader}>Saved Notes</Text>
-                    {savedNotes.map(postModel => (
-                        <View style={styles.noteItem}>
-                            <Text style={styles.noteTitle}>{postModel.title}</Text>
-                            <Text style={styles.noteContent}>{postModel.content}</Text>
+                    {savedNotes.map((post: postModel) => (
+                        <View key={post.id} style={styles.noteItem}>
+                            <Text style={styles.noteTitle}>{post.title}</Text>
+                            <Text style={styles.noteContent}>{post.content}</Text>
                         </View>
                     ))}
                 </View>
@@ -111,6 +159,14 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         backgroundColor: '#f9f9f9',
         textAlignVertical: 'top',
+    },
+    loader: {
+        marginTop: 10,
+    },
+    errorText: {
+        color: 'red',
+        marginTop: 10,
+        textAlign: 'center',
     },
     notesContainer: {
         flex: 1,

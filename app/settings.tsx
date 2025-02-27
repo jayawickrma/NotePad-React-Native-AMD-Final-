@@ -30,6 +30,54 @@ export default function Tab() {
         }
     });
 
+    // Add toggle functionality for settings
+    const toggleTheme = () => {
+        setUser(prevUser => ({
+            ...prevUser,
+            theme: prevUser.theme === 'light' ? 'dark' : 'light'
+        }));
+    };
+
+    const toggleNotifications = () => {
+        setUser(prevUser => ({
+            ...prevUser,
+            notifications: !prevUser.notifications
+        }));
+    };
+
+    const toggleSync = () => {
+        setUser(prevUser => ({
+            ...prevUser,
+            syncEnabled: !prevUser.syncEnabled
+        }));
+    };
+
+    // Handlers for actions
+    const handleEditProfile = () => {
+        // Navigation or modal logic for editing profile
+        console.log('Edit profile');
+    };
+
+    const handleShareProfile = () => {
+        // Share profile logic
+        console.log('Share profile');
+    };
+
+    const handleHelpSupport = () => {
+        // Navigate to help & support screen
+        console.log('Navigate to help & support');
+    };
+
+    const handlePrivacySecurity = () => {
+        // Navigate to privacy & security screen
+        console.log('Navigate to privacy & security');
+    };
+
+    const handleSignOut = () => {
+        // Sign out logic
+        console.log('Sign out');
+    };
+
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
@@ -77,11 +125,17 @@ export default function Tab() {
 
                 {/* Action buttons */}
                 <View style={styles.actionButtons}>
-                    <TouchableOpacity style={styles.actionButton}>
+                    <TouchableOpacity
+                        style={styles.actionButton}
+                        onPress={handleEditProfile}
+                    >
                         <Ionicons name="create-outline" size={22} color="#6200ee" />
                         <Text style={styles.actionButtonText}>Edit Profile</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.actionButton}>
+                    <TouchableOpacity
+                        style={styles.actionButton}
+                        onPress={handleShareProfile}
+                    >
                         <Ionicons name="share-outline" size={22} color="#6200ee" />
                         <Text style={styles.actionButtonText}>Share Profile</Text>
                     </TouchableOpacity>
@@ -102,7 +156,10 @@ export default function Tab() {
                                 Change app appearance
                             </Text>
                         </View>
-                        <TouchableOpacity style={styles.settingToggle}>
+                        <TouchableOpacity
+                            style={styles.settingToggle}
+                            onPress={toggleTheme}
+                        >
                             <View style={[styles.toggleTrack, user.theme === 'dark' && styles.toggleTrackActive]}>
                                 <View style={[styles.toggleThumb, user.theme === 'dark' && styles.toggleThumbActive]} />
                             </View>
@@ -120,7 +177,10 @@ export default function Tab() {
                                 Reminders and alerts
                             </Text>
                         </View>
-                        <TouchableOpacity style={styles.settingToggle}>
+                        <TouchableOpacity
+                            style={styles.settingToggle}
+                            onPress={toggleNotifications}
+                        >
                             <View style={[styles.toggleTrack, user.notifications && styles.toggleTrackActive]}>
                                 <View style={[styles.toggleThumb, user.notifications && styles.toggleThumbActive]} />
                             </View>
@@ -138,7 +198,10 @@ export default function Tab() {
                                 Sync notes across devices
                             </Text>
                         </View>
-                        <TouchableOpacity style={styles.settingToggle}>
+                        <TouchableOpacity
+                            style={styles.settingToggle}
+                            onPress={toggleSync}
+                        >
                             <View style={[styles.toggleTrack, user.syncEnabled && styles.toggleTrackActive]}>
                                 <View style={[styles.toggleThumb, user.syncEnabled && styles.toggleThumbActive]} />
                             </View>
@@ -148,26 +211,35 @@ export default function Tab() {
 
                 {/* Account actions */}
                 <View style={styles.accountActions}>
-                    <TouchableOpacity style={styles.accountActionButton}>
+                    <TouchableOpacity
+                        style={styles.accountActionButton}
+                        onPress={handleHelpSupport}
+                    >
                         <Ionicons name="help-circle-outline" size={22} color="#555" />
                         <Text style={styles.accountActionText}>Help & Support</Text>
                         <Ionicons name="chevron-forward" size={18} color="#999" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.accountActionButton}>
+                    <TouchableOpacity
+                        style={styles.accountActionButton}
+                        onPress={handlePrivacySecurity}
+                    >
                         <Ionicons name="shield-checkmark-outline" size={22} color="#555" />
                         <Text style={styles.accountActionText}>Privacy & Security</Text>
                         <Ionicons name="chevron-forward" size={18} color="#999" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.signOutButton}>
+                    <TouchableOpacity
+                        style={styles.signOutButton}
+                        onPress={handleSignOut}
+                    >
                         <Ionicons name="log-out-outline" size={22} color="#f44336" />
                         <Text style={styles.signOutText}>Sign Out</Text>
                     </TouchableOpacity>
                 </View>
 
                 {/* Social Media Links */}
-                <View style={styles.socialLinksContainer}>
+                <View style={[styles.socialLinksContainer, styles.cardContainer]}>
                     <Text style={styles.sectionTitle}>Social Links</Text>
                     <View style={styles.socialLinkItem}>
                         <Ionicons name="logo-facebook" size={22} color="#3b5998" />
@@ -180,7 +252,7 @@ export default function Tab() {
                 </View>
 
                 {/* Address & Phone */}
-                <View style={styles.contactContainer}>
+                <View style={[styles.contactContainer, styles.cardContainer]}>
                     <Text style={styles.sectionTitle}>Contact Info</Text>
                     <Text style={styles.contactText}>Address: {user.address}</Text>
                     <Text style={styles.contactText}>Phone: {user.phoneNumber}</Text>
@@ -392,7 +464,15 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
     },
     accountActions: {
-        marginTop: 32,
+        marginTop: 24,
+        marginHorizontal: 16,
+        borderRadius: 10,
+        overflow: 'hidden',
+        elevation: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 1,
     },
     accountActionButton: {
         flexDirection: 'row',
@@ -408,6 +488,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '500',
         color: '#333',
+        marginLeft: 12,
     },
     signOutButton: {
         flexDirection: 'row',
@@ -415,37 +496,45 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
         paddingHorizontal: 16,
         backgroundColor: '#fff',
-        borderTopWidth: 1,
-        borderTopColor: '#f0f0f0',
     },
     signOutText: {
         fontSize: 16,
         color: '#f44336',
-        marginLeft: 8,
+        marginLeft: 12,
+    },
+    cardContainer: {
+        backgroundColor: '#fff',
+        marginHorizontal: 16,
+        borderRadius: 10,
+        padding: 16,
+        elevation: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 1,
     },
     socialLinksContainer: {
         marginTop: 24,
-        paddingHorizontal: 16,
-        paddingBottom: 20,
     },
     socialLinkItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 8,
+        marginBottom: 12,
+        paddingVertical: 4,
     },
     socialLinkText: {
         fontSize: 14,
-        marginLeft: 8,
+        marginLeft: 12,
         color: '#555',
     },
     contactContainer: {
         marginTop: 24,
-        paddingHorizontal: 16,
     },
     contactText: {
         fontSize: 14,
         color: '#555',
-        marginTop: 4,
+        marginBottom: 8,
+        paddingVertical: 4,
     },
     versionText: {
         fontSize: 12,
@@ -454,4 +543,3 @@ const styles = StyleSheet.create({
         marginTop: 32,
     },
 });
-
