@@ -78,8 +78,9 @@ export default function Tab() {
         console.log('Sign out');
     };
 
-    const formatDate = (dateString) => {
+    const formatDate = (dateString: string | number | Date) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        // @ts-ignore
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
