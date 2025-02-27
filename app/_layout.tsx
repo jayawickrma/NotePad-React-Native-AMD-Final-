@@ -9,21 +9,21 @@ export default function TabLayout() {
                 name="index"
                 options={{
                     title: 'Notes',
-                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="sticky-note" color={color} />,
+                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="sticky-note-o" color={color} />,
                 }}
             />
             <Tabs.Screen
-                name="newNote"
+                name="CreateNewNote"
                 options={{
-                    title: 'New Note',
-                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="sticky-note" color={color} />,
+                    title: 'Add New',
+                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="pencil-square-o" color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="settings"
                 options={{
                     title: 'User',
-                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="user" color={color} />,
+                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="user-o" color={color} />,
                 }}
             />
         </Tabs>
