@@ -54,6 +54,18 @@ export const deletePost = createAsyncThunk(
         }
     }
 );
+export const getAllPosts =createAsyncThunk(
+    "posts/getAllPosts",
+    async () => {
+        try {
+            const response = await api.get("/posts/getAllPosts");
+            console.log(response.data);
+            return response.data;
+        } catch (e) {
+            throw e;
+        }
+    }
+)
 
 const postSlice = createSlice({
     name: "posts",

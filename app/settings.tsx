@@ -15,12 +15,19 @@ export default function Tab() {
     const [user, setUser] = useState({
         name: 'Alex Johnson',
         email: 'alex.johnson@example.com',
+        bio: 'A passionate developer and tech enthusiast.',
         joinDate: '2024-11-15',
         notesCount: 27,
         profileImage: null, // This would be a URI in a real app
         theme: 'light',
         notifications: true,
-        syncEnabled: true
+        syncEnabled: true,
+        address: '1234 Main Street, City, Country',
+        phoneNumber: '+1 234 567 890',
+        socialLinks: {
+            facebook: 'https://facebook.com/alexjohnson',
+            twitter: 'https://twitter.com/alexjohnson'
+        }
     });
 
     const formatDate = (dateString) => {
@@ -52,6 +59,7 @@ export default function Tab() {
                     </View>
                     <Text style={styles.userName}>{user.name}</Text>
                     <Text style={styles.userEmail}>{user.email}</Text>
+                    <Text style={styles.userBio}>{user.bio}</Text>
                 </View>
 
                 {/* User stats */}
@@ -83,6 +91,7 @@ export default function Tab() {
                 <View style={styles.settingsSection}>
                     <Text style={styles.sectionTitle}>Settings</Text>
 
+                    {/* Theme Setting */}
                     <View style={styles.settingItem}>
                         <View style={styles.settingIconContainer}>
                             <Ionicons name="moon-outline" size={22} color="#6200ee" />
@@ -94,18 +103,13 @@ export default function Tab() {
                             </Text>
                         </View>
                         <TouchableOpacity style={styles.settingToggle}>
-                            <View style={[
-                                styles.toggleTrack,
-                                user.theme === 'dark' && styles.toggleTrackActive
-                            ]}>
-                                <View style={[
-                                    styles.toggleThumb,
-                                    user.theme === 'dark' && styles.toggleThumbActive
-                                ]} />
+                            <View style={[styles.toggleTrack, user.theme === 'dark' && styles.toggleTrackActive]}>
+                                <View style={[styles.toggleThumb, user.theme === 'dark' && styles.toggleThumbActive]} />
                             </View>
                         </TouchableOpacity>
                     </View>
 
+                    {/* Notifications Setting */}
                     <View style={styles.settingItem}>
                         <View style={styles.settingIconContainer}>
                             <Ionicons name="notifications-outline" size={22} color="#6200ee" />
@@ -117,18 +121,13 @@ export default function Tab() {
                             </Text>
                         </View>
                         <TouchableOpacity style={styles.settingToggle}>
-                            <View style={[
-                                styles.toggleTrack,
-                                user.notifications && styles.toggleTrackActive
-                            ]}>
-                                <View style={[
-                                    styles.toggleThumb,
-                                    user.notifications && styles.toggleThumbActive
-                                ]} />
+                            <View style={[styles.toggleTrack, user.notifications && styles.toggleTrackActive]}>
+                                <View style={[styles.toggleThumb, user.notifications && styles.toggleThumbActive]} />
                             </View>
                         </TouchableOpacity>
                     </View>
 
+                    {/* Cloud Sync Setting */}
                     <View style={styles.settingItem}>
                         <View style={styles.settingIconContainer}>
                             <Ionicons name="cloud-upload-outline" size={22} color="#6200ee" />
@@ -140,14 +139,8 @@ export default function Tab() {
                             </Text>
                         </View>
                         <TouchableOpacity style={styles.settingToggle}>
-                            <View style={[
-                                styles.toggleTrack,
-                                user.syncEnabled && styles.toggleTrackActive
-                            ]}>
-                                <View style={[
-                                    styles.toggleThumb,
-                                    user.syncEnabled && styles.toggleThumbActive
-                                ]} />
+                            <View style={[styles.toggleTrack, user.syncEnabled && styles.toggleTrackActive]}>
+                                <View style={[styles.toggleThumb, user.syncEnabled && styles.toggleThumbActive]} />
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -171,6 +164,26 @@ export default function Tab() {
                         <Ionicons name="log-out-outline" size={22} color="#f44336" />
                         <Text style={styles.signOutText}>Sign Out</Text>
                     </TouchableOpacity>
+                </View>
+
+                {/* Social Media Links */}
+                <View style={styles.socialLinksContainer}>
+                    <Text style={styles.sectionTitle}>Social Links</Text>
+                    <View style={styles.socialLinkItem}>
+                        <Ionicons name="logo-facebook" size={22} color="#3b5998" />
+                        <Text style={styles.socialLinkText}>{user.socialLinks.facebook}</Text>
+                    </View>
+                    <View style={styles.socialLinkItem}>
+                        <Ionicons name="logo-twitter" size={22} color="#00acee" />
+                        <Text style={styles.socialLinkText}>{user.socialLinks.twitter}</Text>
+                    </View>
+                </View>
+
+                {/* Address & Phone */}
+                <View style={styles.contactContainer}>
+                    <Text style={styles.sectionTitle}>Contact Info</Text>
+                    <Text style={styles.contactText}>Address: {user.address}</Text>
+                    <Text style={styles.contactText}>Phone: {user.phoneNumber}</Text>
                 </View>
 
                 <Text style={styles.versionText}>Notes App v1.0.0</Text>
@@ -238,6 +251,11 @@ const styles = StyleSheet.create({
     userEmail: {
         fontSize: 16,
         color: '#666',
+    },
+    userBio: {
+        fontSize: 14,
+        color: '#777',
+        marginTop: 4,
     },
     statsContainer: {
         flexDirection: 'row',
@@ -323,13 +341,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#f0f0f0',
     },
-    settingItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
-    },
     settingIconContainer: {
         width: 40,
         height: 40,
@@ -374,55 +385,73 @@ const styles = StyleSheet.create({
         elevation: 2,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 1,
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
     },
     toggleThumbActive: {
-        transform: [{ translateX: 22 }],
-        backgroundColor: '#6200ee',
+        alignSelf: 'flex-end',
     },
     accountActions: {
-        backgroundColor: '#fff',
-        marginTop: 16,
-        marginHorizontal: 16,
-        borderRadius: 10,
-        padding: 8,
-        elevation: 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 1,
+        marginTop: 32,
     },
     accountActionButton: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 16,
         paddingHorizontal: 16,
+        backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#f0f0f0',
     },
     accountActionText: {
         flex: 1,
         fontSize: 16,
+        fontWeight: '500',
         color: '#333',
-        marginLeft: 12,
     },
     signOutButton: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 16,
         paddingHorizontal: 16,
+        backgroundColor: '#fff',
+        borderTopWidth: 1,
+        borderTopColor: '#f0f0f0',
     },
     signOutText: {
         fontSize: 16,
         color: '#f44336',
-        marginLeft: 12,
-        fontWeight: '500',
+        marginLeft: 8,
+    },
+    socialLinksContainer: {
+        marginTop: 24,
+        paddingHorizontal: 16,
+        paddingBottom: 20,
+    },
+    socialLinkItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    socialLinkText: {
+        fontSize: 14,
+        marginLeft: 8,
+        color: '#555',
+    },
+    contactContainer: {
+        marginTop: 24,
+        paddingHorizontal: 16,
+    },
+    contactText: {
+        fontSize: 14,
+        color: '#555',
+        marginTop: 4,
     },
     versionText: {
+        fontSize: 12,
+        color: '#888',
         textAlign: 'center',
-        marginTop: 24,
-        color: '#999',
-        fontSize: 14,
-    }
+        marginTop: 32,
+    },
 });
+
