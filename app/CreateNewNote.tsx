@@ -1,8 +1,10 @@
-import { View, Text, StyleSheet } from 'react-native';
+import {View, StyleSheet, Button} from 'react-native';
 
 export default function Tab() {
     return (
         <View style={styles.container}>
+
+            <Button title={"Create new Note"}></Button>
         </View>
     );
 }

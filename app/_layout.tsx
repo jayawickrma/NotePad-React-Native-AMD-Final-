@@ -2,7 +2,6 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 import { Image } from 'react-native';
 
-
 export default function TabLayout() {
     return (
         <Tabs screenOptions={{ tabBarActiveTintColor: 'blue' }}>
@@ -14,17 +13,12 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="Write new Note"
+                name="newNote"  // Updated name for this tab
                 options={{
-                    title: 'Write',
-                    tabBarIcon: ({ color, size }) => (
-                        <Image
-                            source={require('../Asserts/icons8-write-48.png')} // Update the path if needed
-                            style={{ width: size, height: size, tintColor: color }}
-                        />
-                    ),
+                    title: 'New Note',  // Set the title of the tab
+                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="sticky-note" color={color} />,
                 }}
-            />;
+            />
             <Tabs.Screen
                 name="settings"
                 options={{
