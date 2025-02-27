@@ -1,6 +1,7 @@
 // src/store/Store.ts
 import { configureStore } from "@reduxjs/toolkit";
 import UserSlice from "@/app/Slices/UserSlice";
+import PostSlice from "@/app/Slices/PostSlice";
 
 
 // Create Redux Store
