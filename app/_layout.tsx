@@ -1,5 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
+import { Image } from 'react-native';
+
 
 export default function TabLayout() {
     return (
@@ -15,9 +17,14 @@ export default function TabLayout() {
                 name="Write new Note"
                 options={{
                     title: 'Write',
-                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="creative-commons" color={color} />,
+                    tabBarIcon: ({ color, size }) => (
+                        <Image
+                            source={require('../Asserts/icons8-write-48.png')} // Update the path if needed
+                            style={{ width: size, height: size, tintColor: color }}
+                        />
+                    ),
                 }}
-            />
+            />;
             <Tabs.Screen
                 name="settings"
                 options={{
