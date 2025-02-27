@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.23.0",
+    "@babel/runtime": "^7.26.9",
     "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "^2.1.1",
     "@react-native-community/netinfo": "^11.4.1",
