@@ -1,10 +1,18 @@
-
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import {useEffect, useState} from "react";
+
+// Define the Note type
+interface Note {
+    id: string;
+    title: string;
+    content: string;
+    date: string;
+    color: string;
+}
 
 // Sample data - replace with your actual data source
-const sampleNotes = [
+const sampleNotes: Note[] = [
     { id: '1', title: 'Shopping List', content: 'Milk, eggs, bread, fruits', date: '2025-02-25', color: '#FFD7D7' },
     { id: '2', title: 'Meeting Notes', content: 'Discuss Q1 goals with the team', date: '2025-02-26', color: '#D7EFFF' },
     { id: '3', title: 'Ideas', content: 'App features: dark mode, cloud sync', date: '2025-02-27', color: '#D7FFD7' },
@@ -12,15 +20,14 @@ const sampleNotes = [
 ];
 
 export default function Tab() {
-    const [notes, setNotes] = useState(sampleNotes);
+    const [notes, setNotes] = useState<Note[]>(sampleNotes);
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredNotes, setFilteredNotes] = useState(notes);
-
+    const [filteredNotes, setFilteredNotes] = useState<Note[]>(notes);
 
     useEffect(() => {
         if (searchQuery) {
             const filtered = notes.filter(
-                note =>
+                (note) =>
                     note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                     note.content.toLowerCase().includes(searchQuery.toLowerCase())
             );
@@ -30,8 +37,7 @@ export default function Tab() {
         }
     }, [searchQuery, notes]);
 
-
-    const renderNoteCard = ({ item }) => (
+    const renderNoteCard = ({ item }: { item: Note }) => (
         <TouchableOpacity
             style={[styles.card, { backgroundColor: item.color }]}
             onPress={() => console.log('View note details', item.id)}
@@ -96,7 +102,7 @@ export default function Tab() {
                 <FlatList
                     data={filteredNotes}
                     renderItem={renderNoteCard}
-                    keyExtractor={item => item.id}
+                    keyExtractor={(item) => item.id}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.listContainer}
                 />

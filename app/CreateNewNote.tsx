@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {postModel} from  './Model/PostModel'
 import { View, StyleSheet, Button, TextInput, Text } from 'react-native';
 
 export default function Tab() {
@@ -48,10 +49,10 @@ export default function Tab() {
             {savedNotes.length > 0 && (
                 <View style={styles.notesContainer}>
                     <Text style={styles.savedNotesHeader}>Saved Notes</Text>
-                    {savedNotes.map(item => (
-                        <View key={item.id} style={styles.noteItem}>
-                            <Text style={styles.noteTitle}>{item.title}</Text>
-                            <Text style={styles.noteContent}>{item.note}</Text>
+                    {savedNotes.map(postModel => (
+                        <View style={styles.noteItem}>
+                            <Text style={styles.noteTitle}>{postModel.title}</Text>
+                            <Text style={styles.noteContent}>{postModel.content}</Text>
                         </View>
                     ))}
                 </View>
