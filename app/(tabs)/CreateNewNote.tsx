@@ -10,35 +10,56 @@ export default function Tab() {
 
     const [title, setTitle] = useState('');
     const [note, setNote] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const clearForm = () => {
+        setTitle('');
+        setNote('');
+    };
 
     const handleSaveNote = async () => {
         if (title.trim() && note.trim()) {
+            setIsSubmitting(true);
             try {
-                // Create a new post object
+
                 const newPost: postModel = {
                     title: title.trim(),
                     content: note.trim(),
+                    createdAt: "",
                     id: Date.now(),
                     authorId: 1,
                 };
 
-                // Dispatch the createPost action
+
                 await dispatch(createPost(newPost)).unwrap();
 
-                // Clear form after successful save
-                setTitle('');
-                setNote('');
 
-                // Show success message
-                Alert.alert("Success", "Note saved successfully!");
+                clearForm();
+
+
+                Alert.alert(
+                    "Success",
+                    "Note saved successfully!",
+                    [{ text: "OK" }]
+                );
 
             } catch (err) {
-                // Handle error
+
                 console.error("Failed to save note:", err);
-                Alert.alert("Error", "Failed to save note. Please try again.");
+                Alert.alert(
+                    "Error",
+                    "Failed to save note. Please try again.",
+                    [{ text: "OK" }]
+                );
+            } finally {
+                setIsSubmitting(false);
             }
         } else {
-            Alert.alert("Error", "Title and content cannot be empty.");
+            Alert.alert(
+                "Error",
+                "Title and content cannot be empty.",
+                [{ text: "OK" }]
+            );
         }
     };
 
@@ -54,6 +75,7 @@ export default function Tab() {
                     onChangeText={setTitle}
                     placeholder="Enter title..."
                     placeholderTextColor="#999"
+                    editable={!isSubmitting}
                 />
 
                 <Text style={styles.label}>Content</Text>
@@ -64,13 +86,17 @@ export default function Tab() {
                     placeholder="Enter note content..."
                     placeholderTextColor="#999"
                     multiline
+                    editable={!isSubmitting}
                 />
 
-                <Button
-                    title="Save Note"
-                    onPress={handleSaveNote}
-                    color="#8a2be2"
-                />
+                <View style={styles.buttonContainer}>
+                    <Button
+                        title={isSubmitting ? "Saving..." : "Save Note"}
+                        onPress={handleSaveNote}
+                        color="#8a2be2"
+                        disabled={isSubmitting || !title.trim() || !note.trim()}
+                    />
+                </View>
             </View>
         </View>
     );
@@ -127,4 +153,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f9f9f9',
         textAlignVertical: 'top',
     },
+    buttonContainer: {
+        marginTop: 10,
+    }
 });

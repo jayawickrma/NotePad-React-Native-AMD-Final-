@@ -19,7 +19,7 @@ export default function Tab() {
         joinDate: '2024-11-15',
         notesCount: 27,
         profileImage: null, // This would be a URI in a real app
-        theme: 'dark',
+        theme: 'white',
         notifications: true,
         syncEnabled: true,
         address: '1234 Main Street, City, Country',
@@ -30,7 +30,7 @@ export default function Tab() {
         }
     });
 
-    // Add toggle functionality for settings
+
     const toggleTheme = () => {
         setUser(prevUser => ({
             ...prevUser,
