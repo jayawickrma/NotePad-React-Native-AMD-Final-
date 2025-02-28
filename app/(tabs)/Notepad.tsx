@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput ,Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import {fetchPosts, getAllPosts} from '@/Slices/PostSlice';
+import {deletePost, fetchPosts, getAllPosts} from '@/Slices/PostSlice';
 import { RootState, AppDispatch } from "@/Store/Store";
 
 // Define the Note type
@@ -50,7 +50,21 @@ export default function Tab() {
             console.error('Failed to fetch posts:', err);
         }
     };
+    const handleDeleteNote = async (noteId: string) => {
 
+                        try {
+                            console.log("Attempting to delete note with ID:", noteId); // Debugging log
+
+                            // Dispatch the deletePost action and wait for it to complete
+                            await dispatch(deletePost(Number(noteId))).unwrap();
+
+                            await dispatch(fetchPosts());
+
+                            console.log("Note deleted successfully!"); // Debugging log
+                        } catch (error) {
+                            console.error("Error deleting note:", error); // Log any errors
+                        }
+    };
     // Function to get random pastel color
     const getRandomColor = () => {
         const colors = ['#FFD7D7', '#D7EFFF', '#D7FFD7', '#FFFDD7', '#EFD7FF'];
@@ -91,10 +105,11 @@ export default function Tab() {
 
                 <TouchableOpacity
                     style={styles.iconButton}
-                    onPress={() => console.log('Delete note', item.id)}
+                    onPress={()=>handleDeleteNote(item.id)}
                 >
                     <Ionicons name="trash-outline" size={18} color="#555" />
                 </TouchableOpacity>
+
             </View>
         </TouchableOpacity>
     );

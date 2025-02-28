@@ -47,7 +47,9 @@ export const deletePost = createAsyncThunk(
     "posts/deletePost",
     async (postId: number) => {
         try {
-            await api.delete(`/posts/${postId}`);
+            await api.delete(`/post/deletePost`,{
+                    params: {id: postId }
+            });
             return postId; // return the postId to delete from state
         } catch (e) {
             throw e;
@@ -60,6 +62,7 @@ export const getAllPosts =createAsyncThunk(
         try {
             const response = await api.get("/post/getPost");
             return response.data;
+            await fetchPosts()
         } catch (e) {
             throw e;
         }
@@ -114,6 +117,7 @@ const postSlice = createSlice({
             .addCase(deletePost.pending, (state) => {
                 state.loading = true;
                 state.error = "";
+
             })
             .addCase(deletePost.rejected, (state, action) => {
                 state.loading = false;

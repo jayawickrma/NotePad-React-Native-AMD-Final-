@@ -1,27 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { postModel } from '@/Model/PostModel';
-import { View, StyleSheet, Button, TextInput, Text, Alert, ActivityIndicator, Modal, TouchableOpacity } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { View, StyleSheet, Button, TextInput, Text, Alert } from 'react-native';
+import { useDispatch } from 'react-redux';
 import { createPost } from '@/Slices/PostSlice';
-import { RootState, AppDispatch } from "@/Store/Store";
+import { AppDispatch } from "@/Store/Store";
 
 export default function Tab() {
     const dispatch = useDispatch<AppDispatch>();
-    const { posts, loading, error } = useSelector((state: RootState) => state.post);
 
     const [title, setTitle] = useState('');
     const [note, setNote] = useState('');
-    const [savedNotes, setSavedNotes] = useState<postModel[]>([]);
-    const [isLoadingModalVisible, setIsLoadingModalVisible] = useState(false); // State for loading modal
-    const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false); // State for success modal
-
 
     const handleSaveNote = async () => {
         if (title.trim() && note.trim()) {
             try {
-                // Show loading modal
-                setIsLoadingModalVisible(true);
-
                 // Create a new post object
                 const newPost: postModel = {
                     title: title.trim(),
@@ -37,14 +29,12 @@ export default function Tab() {
                 setTitle('');
                 setNote('');
 
-                // Hide loading modal and show success modal
-                setIsLoadingModalVisible(false);
-                setIsSuccessModalVisible(true);
+                // Show success message
+                Alert.alert("Success", "Note saved successfully!");
 
             } catch (err) {
                 // Handle error
                 console.error("Failed to save note:", err);
-                setIsLoadingModalVisible(false); // Hide loading modal
                 Alert.alert("Error", "Failed to save note. Please try again.");
             }
         } else {
@@ -80,42 +70,8 @@ export default function Tab() {
                     title="Save Note"
                     onPress={handleSaveNote}
                     color="#8a2be2"
-                    disabled={loading || !title.trim() || !note.trim()}
                 />
             </View>
-
-            {/* Loading Modal */}
-            <Modal
-                visible={isLoadingModalVisible}
-                transparent={true}
-                animationType="fade"
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <ActivityIndicator size="large" color="#8a2be2" />
-                        <Text style={styles.modalText}>Saving Note...</Text>
-                    </View>
-                </View>
-            </Modal>
-
-            {/* Success Modal */}
-            <Modal
-                visible={isSuccessModalVisible}
-                transparent={true}
-                animationType="fade"
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalText}>Note saved successfully!</Text>
-                        <TouchableOpacity
-                            style={styles.closeButton}
-                            onPress={() => setIsSuccessModalVisible(false)}
-                        >
-                            <Text style={styles.closeButtonText}>Close</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
         </View>
     );
 }
@@ -170,36 +126,5 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         backgroundColor: '#f9f9f9',
         textAlignVertical: 'top',
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContent: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        padding: 20,
-        alignItems: 'center',
-        width: '80%',
-    },
-    modalText: {
-        fontSize: 18,
-        marginBottom: 20,
-        textAlign: 'center',
-        color: '#333',
-    },
-    closeButton: {
-        backgroundColor: '#8a2be2',
-        padding: 10,
-        borderRadius: 8,
-        width: '100%',
-        alignItems: 'center',
-    },
-    closeButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
     },
 });
