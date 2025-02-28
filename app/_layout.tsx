@@ -1,37 +1,18 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import {Slot, Tabs} from 'expo-router';
-import {store} from "@/Store/Store";
+import { Stack } from 'expo-router/stack';
+import { PaperProvider } from "react-native-paper";
+import React from "react";
 import {Provider} from "react-redux";
+import {store} from "../Store/Store";
+import { LogBox } from "react-native";
 
-export default function TabLayout() {
+export default function Layout() {
+
     return (
-
-            <Provider store={store}>
-                <Tabs screenOptions={{ tabBarActiveTintColor: 'blue' }}>
-                <Slot />
-                    <Tabs.Screen
-                        name="Notepad"
-                        options={{
-                            title: 'Notes',
-                            tabBarIcon: ({ color }) => <FontAwesome size={28} name="sticky-note-o" color={color} />,
-                        }}
-                    />
-                    <Tabs.Screen
-                        name="CreateNewNote"
-                        options={{
-                            title: 'Add New',
-                            tabBarIcon: ({ color }) => <FontAwesome size={28} name="pencil-square-o" color={color} />,
-                        }}
-                    />
-                    <Tabs.Screen
-                        name="settings"
-                        options={{
-                            title: 'User',
-                            tabBarIcon: ({ color }) => <FontAwesome size={28} name="user-o" color={color} />,
-                        }}
-                    />
-        </Tabs>
-            </Provider>
-
+        <Provider store={store}>
+                <Stack>
+                    <Stack.Screen name="index" options={{headerShown: false}}/>
+                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                </Stack>
+        </Provider>
     );
 }

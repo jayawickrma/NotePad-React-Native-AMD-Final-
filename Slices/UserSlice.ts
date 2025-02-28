@@ -51,6 +51,7 @@ export const login = createAsyncThunk(
     async (user: UserModel) => {
         try {
             const response = await api.post("auth/signIn", user, { withCredentials: true });
+            console.log(response.data)
             return response.data;
         } catch (e) {
             throw e;
