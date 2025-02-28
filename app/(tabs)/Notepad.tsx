@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput ,Alert} from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import {deletePost, fetchPosts, getAllPosts} from '@/Slices/PostSlice';
+import { deletePost, fetchPosts, getAllPosts } from '@/Slices/PostSlice';
 import { RootState, AppDispatch } from "@/Store/Store";
+import NoteDetail from "../../Component/NoteDetail"; // Import the NoteDetail component
 
 // Define the Note type
 interface Note {
@@ -22,10 +23,13 @@ export default function Tab() {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredNotes, setFilteredNotes] = useState<Note[]>(notes);
 
+    // New state for note detail view
+    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+    const [noteDetailVisible, setNoteDetailVisible] = useState(false);
+
     // Fetch all posts when component mounts
-    // @ts-ignore
     useEffect(() => {
-        dispatch(fetchPosts())
+        dispatch(fetchPosts());
     }, []);
 
     // Convert posts to notes format when posts change
@@ -35,7 +39,7 @@ export default function Tab() {
                 id: post.id.toString(),
                 title: post.title || 'Untitled',
                 content: post.content || '',
-                date: new Date().toString().split('T')[0], // Today's date as fallback
+                date: new Date(post.createdAt || Date.now()).toLocaleDateString() || new Date().toLocaleDateString(),
                 color: getRandomColor(),
             }));
             setNotes(formattedNotes);
@@ -50,21 +54,40 @@ export default function Tab() {
             console.error('Failed to fetch posts:', err);
         }
     };
-    const handleDeleteNote = async (noteId: string) => {
 
-                        try {
-                            console.log("Attempting to delete note with ID:", noteId); // Debugging log
-
-                            // Dispatch the deletePost action and wait for it to complete
-                            await dispatch(deletePost(Number(noteId))).unwrap();
-
-                            await dispatch(fetchPosts());
-
-                            console.log("Note deleted successfully!"); // Debugging log
-                        } catch (error) {
-                            console.error("Error deleting note:", error); // Log any errors
-                        }
+    const handleViewNote = (note: Note) => {
+        setSelectedNote(note);
+        setNoteDetailVisible(true);
     };
+
+    const handleCloseNoteDetail = () => {
+        setNoteDetailVisible(false);
+        setSelectedNote(null);
+    };
+
+    const handleDeleteNote = async (noteId: string) => {
+        try {
+            await dispatch(deletePost(Number(noteId))).unwrap();
+            await dispatch(fetchPosts());
+        } catch (error) {
+            console.error("Error deleting note:", error);
+            Alert.alert("Error", "Failed to delete note. Please try again.");
+        }
+    };
+
+    const handleEditNote = async (id: string, title: string, content: string) => {
+        // You'll need to implement the updatePost action in your PostSlice
+        try {
+            // This is a placeholder. You need to implement this action in your slice
+            // await dispatch(updatePost({ id: Number(id), title, content })).unwrap();
+            Alert.alert("Success", "Note updated successfully!");
+            await dispatch(fetchPosts());
+        } catch (error) {
+            console.error("Error updating note:", error);
+            Alert.alert("Error", "Failed to update note. Please try again.");
+        }
+    };
+
     // Function to get random pastel color
     const getRandomColor = () => {
         const colors = ['#FFD7D7', '#D7EFFF', '#D7FFD7', '#FFFDD7', '#EFD7FF'];
@@ -87,7 +110,7 @@ export default function Tab() {
     const renderNoteCard = ({ item }: { item: Note }) => (
         <TouchableOpacity
             style={[styles.card, { backgroundColor: item.color }]}
-            onPress={() => console.log('View note details', item.id)}
+            onPress={() => handleViewNote(item)}
         >
             <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
@@ -98,18 +121,20 @@ export default function Tab() {
             <View style={styles.cardFooter}>
                 <TouchableOpacity
                     style={styles.iconButton}
-                    onPress={() => console.log('Edit note', item.id)}
+                    onPress={() => {
+                        setSelectedNote(item);
+                        setNoteDetailVisible(true);
+                    }}
                 >
-                    <Ionicons name="pencil-outline" size={18} color="#555" />
+                    <Ionicons name="eye-outline" size={18} color="#555" />
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={styles.iconButton}
-                    onPress={()=>handleDeleteNote(item.id)}
+                    onPress={() => handleDeleteNote(item.id)}
                 >
                     <Ionicons name="trash-outline" size={18} color="#555" />
                 </TouchableOpacity>
-
             </View>
         </TouchableOpacity>
     );
@@ -172,24 +197,28 @@ export default function Tab() {
                     onRefresh={fetchAllPosts}
                 />
             )}
+
+            {/* Note Detail Modal */}
+            <Modal
+                animationType="slide"
+                transparent={false}
+                visible={noteDetailVisible}
+                onRequestClose={handleCloseNoteDetail}
+            >
+                {selectedNote && (
+                    <NoteDetail
+                        note={selectedNote}
+                        onClose={handleCloseNoteDetail}
+                        onEdit={handleEditNote}
+                        onDelete={handleDeleteNote}
+                    />
+                )}
+            </Modal>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    // ... existing styles
-    retryButton: {
-        marginTop: 16,
-        backgroundColor: '#6200ee',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 8,
-    },
-    retryText: {
-        color: 'white',
-        fontWeight: 'bold',
-    },
-    // Keep all other existing styles
     container: {
         flex: 1,
         backgroundColor: '#f5f5f5',
@@ -294,5 +323,16 @@ const styles = StyleSheet.create({
         marginTop: 16,
         fontSize: 18,
         color: '#999',
+    },
+    retryButton: {
+        marginTop: 16,
+        backgroundColor: '#6200ee',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 8,
+    },
+    retryText: {
+        color: 'white',
+        fontWeight: 'bold',
     },
 });
