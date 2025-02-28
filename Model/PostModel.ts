@@ -4,6 +4,8 @@ export interface postModel{
     title:string;
     authorId:number
     createdAt: string;
+    updatedAt: string;
+
 
 
 }

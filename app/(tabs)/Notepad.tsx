@@ -5,12 +5,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getAllPosts } from '@/Slices/PostSlice';
 import { RootState, AppDispatch } from "@/Store/Store";
 
-// Define the Note type
-interface Note {
-    id: string;
+// Define the Post type according to the postModel interface
+interface Post {
+    id: number;
     title: string;
     content: string;
-    date: string;
+    createdAt: string;
     color: string;
 }
 
@@ -24,33 +24,33 @@ export default function Tab() {
         dispatch(getAllPosts());
     }, [dispatch]);
 
-    // Transform fetched posts into notes with colors
-    const formattedNotes: Note[] = posts.map(post => ({
-        id: post.id.toString(),
+    // Format fetched posts into an array of notes with colors
+    const formattedPosts: Post[] = posts.map((post) => ({
+        id: post.id,
         title: post.title || 'Untitled',
         content: post.content || '',
-        date: post.createdAt.split('T')[0], // Extract date
+        createdAt: post.createdAt.split('T')[0], // Extract date from createdAt
         color: getRandomColor(),
     }));
 
-    // Filter notes based on search query
-    const filteredNotes = formattedNotes.filter(
-        (note) =>
-            note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            note.content.toLowerCase().includes(searchQuery.toLowerCase())
+    // Filter posts based on search query
+    const filteredPosts = formattedPosts.filter(
+        (post) =>
+            post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            post.content.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Function to get random pastel color
+    // Function to generate random pastel colors for cards
     function getRandomColor() {
         const colors = ['#FFD7D7', '#D7EFFF', '#D7FFD7', '#FFFDD7', '#EFD7FF'];
         return colors[Math.floor(Math.random() * colors.length)];
     }
 
-    const renderNoteCard = ({ item }: { item: Note }) => (
+    const renderPostCard = ({ item }: { item: Post }) => (
         <TouchableOpacity style={[styles.card, { backgroundColor: item.color }]}>
             <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
-                <Text style={styles.cardDate}>{item.date}</Text>
+                <Text style={styles.cardDate}>{item.createdAt}</Text>
             </View>
             <Text style={styles.cardContent} numberOfLines={3}>{item.content}</Text>
         </TouchableOpacity>
@@ -59,7 +59,7 @@ export default function Tab() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>My Notes</Text>
+                <Text style={styles.headerTitle}>My Posts</Text>
                 <TouchableOpacity style={styles.addButton}>
                     <Ionicons name="add" size={24} color="white" />
                 </TouchableOpacity>
@@ -69,7 +69,7 @@ export default function Tab() {
                 <Ionicons name="search-outline" size={20} color="#777" style={styles.searchIcon} />
                 <TextInput
                     style={styles.searchInput}
-                    placeholder="Search notes..."
+                    placeholder="Search posts..."
                     value={searchQuery}
                     onChangeText={setSearchQuery}
                 />
@@ -86,16 +86,16 @@ export default function Tab() {
                 <View style={styles.emptyState}>
                     <Text style={[styles.emptyStateText, { color: 'red' }]}>Error: {error}</Text>
                 </View>
-            ) : filteredNotes.length === 0 ? (
+            ) : filteredPosts.length === 0 ? (
                 <View style={styles.emptyState}>
                     <Ionicons name="document-text-outline" size={60} color="#ccc" />
-                    <Text style={styles.emptyStateText}>No notes found</Text>
+                    <Text style={styles.emptyStateText}>No posts found</Text>
                 </View>
             ) : (
                 <FlatList
-                    data={filteredNotes}
-                    renderItem={renderNoteCard}
-                    keyExtractor={(item) => item.id}
+                    data={filteredPosts}
+                    renderItem={renderPostCard}
+                    keyExtractor={(item) => item.id.toString()}
                 />
             )}
         </View>
