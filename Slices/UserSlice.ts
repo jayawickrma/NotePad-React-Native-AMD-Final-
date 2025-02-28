@@ -1,6 +1,12 @@
 import {UserModel} from "@/Model/UserModel";
-import {api} from "@/Services/api";
+// import {api} from "@/Services/api";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import {refreshToken, saveToken} from "@/Services/tokenService";
+
+const api = axios.create({
+    baseURL: "http://192.168.1.3:8080/api/v1/"
+});
 
 const initialState: {
     user: UserModel | null;
@@ -50,8 +56,9 @@ export const login = createAsyncThunk(
     "auth/signIn",
     async (user: UserModel) => {
         try {
+            console.log("slice call una  ")
             const response = await api.post("auth/signIn", user, { withCredentials: true });
-            console.log(response.data)
+            console.log("response datad :: ",response.data)
             return response.data;
         } catch (e) {
             throw e;
@@ -99,12 +106,15 @@ const userSlice = createSlice({
                     state.jwt_token = action.payload.accessToken;
                     state.refresh_token = action.payload.refreshToken;
                     state.username = action.payload.username;
+                    saveToken(action.payload.accessToken);
+                    refreshToken(action.payload.refreshToken)
                     state.isAuthenticated = true;
                     state.error = "";
-
+                    console.log("fulfilled req login")
+                    console.log("access token :: ", action.payload.accessToken);
                     // Store JWT tokens in localStorage
-                    localStorage.setItem("jwt_token", action.payload.accessToken);
-                    localStorage.setItem("refresh_token", action.payload.refreshToken);
+                    // localStorage.setItem("jwt_token", action.payload.accessToken);
+                    // localStorage.setItem("refresh_token", action.payload.refreshToken);
                 }
             })
             .addCase(login.pending, (state) => {

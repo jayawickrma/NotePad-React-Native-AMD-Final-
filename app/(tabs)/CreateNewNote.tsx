@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { postModel } from '@/Model/PostModel';
 import { View, StyleSheet, Button, TextInput, Text, Alert, ActivityIndicator, Modal, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { createPost, fetchPosts } from '@/Slices/PostSlice';
+import { createPost } from '@/Slices/PostSlice';
 import { RootState, AppDispatch } from "@/Store/Store";
 
 export default function Tab() {
@@ -15,12 +15,6 @@ export default function Tab() {
     const [isLoadingModalVisible, setIsLoadingModalVisible] = useState(false); // State for loading modal
     const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false); // State for success modal
 
-    // Update local state when posts change in Redux store
-    useEffect(() => {
-        if (posts && posts.length > 0) {
-            setSavedNotes(posts);
-        }
-    }, [posts]);
 
     const handleSaveNote = async () => {
         if (title.trim() && note.trim()) {

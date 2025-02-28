@@ -22,9 +22,9 @@ export type PostRootState = {
 };
 
 // Thunks to handle async actions
-export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
+export const fetchPosts = createAsyncThunk("post/getPost", async () => {
     try {
-        const response = await api.get("/posts");
+        const response = await api.get("/post/getPost");
         return response.data;
     } catch (e) {
         throw e;
@@ -59,7 +59,6 @@ export const getAllPosts =createAsyncThunk(
     async () => {
         try {
             const response = await api.get("/post/getPost");
-            console.log(response.data);
             return response.data;
         } catch (e) {
             throw e;
@@ -76,6 +75,7 @@ const postSlice = createSlice({
             // Fetch posts
             .addCase(fetchPosts.fulfilled, (state, action) => {
                 state.posts = action.payload;
+                console.log("Hellow Motherererer:::  "+action.payload);
                 state.loading = false;
                 state.error = "";
             })
