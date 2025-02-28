@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { postModel } from './Model/PostModel';
+import { postModel } from '@/Model/PostModel';
 import { View, StyleSheet, Button, TextInput, Text, Alert, ActivityIndicator } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { createPost, fetchPosts } from '@/app/Slices/PostSlice';
-import { RootState, AppDispatch } from "./Store/Store";
+import { createPost, fetchPosts } from '@/Slices/PostSlice';
+import { RootState, AppDispatch } from "@/Store/Store";
 
 export default function Tab() {
     const dispatch = useDispatch<AppDispatch>();

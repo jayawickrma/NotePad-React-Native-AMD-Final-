@@ -1,283 +1,173 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllPosts } from '@/app/Slices/PostSlice';
-import { RootState, AppDispatch } from "./Store/Store";
+// SignInPage.tsx
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 
-// Define the Note type
-interface Note {
-    id: string;
-    title: string;
-    content: string;
-    date: string;
-    color: string;
-}
+export default function SignInPage() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { login } = useAuth();
+    const router = useRouter();
 
-export default function Tab() {
-    const dispatch = useDispatch<AppDispatch>();
-    const { posts, loading, error } = useSelector((state: RootState) => state.post);
-
-    const [notes, setNotes] = useState<Note[]>([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredNotes, setFilteredNotes] = useState<Note[]>(notes);
-
-    // Fetch all posts when component mounts
-    useEffect(() => {
-        fetchAllPosts();
-    }, []);
-
-    // Convert posts to notes format when posts change
-    useEffect(() => {
-        if (posts && posts.length > 0) {
-            // Convert posts to notes format
-            const formattedNotes: Note[] = posts.map(post => ({
-                id: post.id.toString(),
-                title: post.title || 'Untitled',
-                content: post.content || '',
-                date: new Date().toISOString().split('T')[0], // Today's date as fallback
-                color: getRandomColor(), // Function to assign colors
-            }));
-            setNotes(formattedNotes);
+    const handleSignIn = async () => {
+        if (!email || !password) {
+            Alert.alert('Error', 'Please enter both email and password');
+            return;
         }
-    }, [posts]);
 
-    // Function to fetch all posts
-    const fetchAllPosts = async () => {
         try {
-            await dispatch(getAllPosts()).unwrap();
-        } catch (err) {
-            console.error('Failed to fetch posts:', err);
-        }
-    };
-
-    // Function to get random pastel color
-    const getRandomColor = () => {
-        const colors = ['#FFD7D7', '#D7EFFF', '#D7FFD7', '#FFFDD7', '#EFD7FF'];
-        return colors[Math.floor(Math.random() * colors.length)];
-    };
-
-    useEffect(() => {
-        if (searchQuery) {
-            const filtered = notes.filter(
-                (note) =>
-                    note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    note.content.toLowerCase().includes(searchQuery.toLowerCase())
+            setIsSubmitting(true);
+            await login(email, password);
+            // Navigate to home page or dashboard after successful login
+            router.replace('/');
+        } catch (error) {
+            Alert.alert(
+                'Sign In Failed',
+                'Invalid email or password. Please try again.'
             );
-            setFilteredNotes(filtered);
-        } else {
-            setFilteredNotes(notes);
+            console.error('Login error:', error);
+        } finally {
+            setIsSubmitting(false);
         }
-    }, [searchQuery, notes]);
+    };
 
-    const renderNoteCard = ({ item }: { item: Note }) => (
-        <TouchableOpacity
-            style={[styles.card, { backgroundColor: item.color }]}
-            onPress={() => console.log('View note details', item.id)}
-        >
-            <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
-                <Text style={styles.cardDate}>{item.date}</Text>
-            </View>
-            <Text style={styles.cardContent} numberOfLines={3}>{item.content}</Text>
+    const navigateToSignUp = () => {
+        router.push('/signup');
+    };
 
-            <View style={styles.cardFooter}>
-                <TouchableOpacity
-                    style={styles.iconButton}
-                    onPress={() => console.log('Edit note', item.id)}
-                >
-                    <Ionicons name="pencil-outline" size={18} color="#555" />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={styles.iconButton}
-                    onPress={() => console.log('Delete note', item.id)}
-                >
-                    <Ionicons name="trash-outline" size={18} color="#555" />
-                </TouchableOpacity>
-            </View>
-        </TouchableOpacity>
-    );
+    const navigateToForgotPassword = () => {
+        router.push('/forgot-password');
+    };
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.headerTitle}>My Notes</Text>
+            <View style={styles.formContainer}>
+                <Text style={styles.title}>Sign In</Text>
+
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Email</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={email}
+                        onChangeText={setEmail}
+                        placeholder="Enter your email"
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        autoCompleteType="email"
+                    />
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Password</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={password}
+                        onChangeText={setPassword}
+                        placeholder="Enter your password"
+                        secureTextEntry
+                    />
+                </View>
+
                 <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={() => console.log('Add new note')}
+                    onPress={navigateToForgotPassword}
+                    style={styles.forgotPasswordContainer}
                 >
-                    <Ionicons name="add" size={24} color="white" />
+                    <Text style={styles.forgotPasswordText}>Forgot password?</Text>
                 </TouchableOpacity>
-            </View>
 
-            <View style={styles.searchContainer}>
-                <Ionicons name="search-outline" size={20} color="#777" style={styles.searchIcon} />
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Search notes..."
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                />
-                {searchQuery ? (
-                    <TouchableOpacity onPress={() => setSearchQuery('')}>
-                        <Ionicons name="close-circle" size={20} color="#777" />
-                    </TouchableOpacity>
-                ) : null}
-            </View>
+                <TouchableOpacity
+                    style={styles.signInButton}
+                    onPress={handleSignIn}
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? (
+                        <ActivityIndicator color="#fff" />
+                    ) : (
+                        <Text style={styles.signInButtonText}>Sign In</Text>
+                    )}
+                </TouchableOpacity>
 
-            {loading ? (
-                <View style={styles.emptyState}>
-                    <Text>Loading notes...</Text>
-                </View>
-            ) : error ? (
-                <View style={styles.emptyState}>
-                    <Text style={[styles.emptyStateText, { color: 'red' }]}>
-                        Error loading notes: {error}
-                    </Text>
-                    <TouchableOpacity
-                        style={styles.retryButton}
-                        onPress={fetchAllPosts}>
-                        <Text style={styles.retryText}>Retry</Text>
+                <View style={styles.signUpContainer}>
+                    <Text style={styles.signUpText}>Don't have an account? </Text>
+                    <TouchableOpacity onPress={navigateToSignUp}>
+                        <Text style={styles.signUpButtonText}>Sign Up</Text>
                     </TouchableOpacity>
                 </View>
-            ) : filteredNotes.length === 0 ? (
-                <View style={styles.emptyState}>
-                    <Ionicons name="document-text-outline" size={60} color="#ccc" />
-                    <Text style={styles.emptyStateText}>No notes found</Text>
-                </View>
-            ) : (
-                <FlatList
-                    data={filteredNotes}
-                    renderItem={renderNoteCard}
-                    keyExtractor={(item) => item.id}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={styles.listContainer}
-                    refreshing={loading}
-                    onRefresh={fetchAllPosts}
-                />
-            )}
+            </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    // ... existing styles
-    retryButton: {
-        marginTop: 16,
-        backgroundColor: '#6200ee',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 8,
-    },
-    retryText: {
-        color: 'white',
-        fontWeight: 'bold',
-    },
-    // Keep all other existing styles
     container: {
         flex: 1,
         backgroundColor: '#f5f5f5',
-        padding: 16,
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 20,
-        paddingTop: 10,
-    },
-    headerTitle: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    addButton: {
-        backgroundColor: '#6200ee',
-        width: 44,
-        height: 44,
-        borderRadius: 22,
         justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 4,
+        padding: 20,
+    },
+    formContainer: {
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 20,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
-    },
-    searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'white',
-        borderRadius: 12,
-        paddingHorizontal: 12,
-        marginBottom: 16,
-        height: 50,
-        borderWidth: 1,
-        borderColor: '#ddd',
-    },
-    searchIcon: {
-        marginRight: 8,
-    },
-    searchInput: {
-        flex: 1,
-        height: 50,
-        fontSize: 16,
-    },
-    listContainer: {
-        paddingBottom: 20,
-    },
-    card: {
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
         elevation: 2,
     },
-    cardHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-    },
-    cardTitle: {
-        fontSize: 18,
+    title: {
+        fontSize: 24,
         fontWeight: 'bold',
-        color: '#333',
-        flex: 1,
+        marginBottom: 24,
+        textAlign: 'center',
     },
-    cardDate: {
-        fontSize: 12,
+    inputContainer: {
+        marginBottom: 16,
+    },
+    label: {
+        fontSize: 16,
+        marginBottom: 8,
+        fontWeight: '500',
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 8,
+        padding: 12,
+        fontSize: 16,
+    },
+    forgotPasswordContainer: {
+        alignItems: 'flex-end',
+        marginBottom: 24,
+    },
+    forgotPasswordText: {
+        color: '#3498db',
+        fontSize: 14,
+    },
+    signInButton: {
+        backgroundColor: '#3498db',
+        borderRadius: 8,
+        padding: 16,
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    signInButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    signUpContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    signUpText: {
+        fontSize: 14,
         color: '#666',
     },
-    cardContent: {
+    signUpButtonText: {
         fontSize: 14,
-        color: '#555',
-        marginBottom: 12,
-    },
-    cardFooter: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-    },
-    iconButton: {
-        width: 36,
-        height: 36,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginLeft: 8,
-        borderRadius: 18,
-        backgroundColor: 'rgba(0,0,0,0.05)',
-    },
-    emptyState: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    emptyStateText: {
-        marginTop: 16,
-        fontSize: 18,
-        color: '#999',
+        color: '#3498db',
+        fontWeight: 'bold',
     },
 });
