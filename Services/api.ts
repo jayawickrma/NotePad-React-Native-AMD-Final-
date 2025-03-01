@@ -4,7 +4,7 @@ import React from "react";
 import {getToken, removeToken, saveToken} from "@/Services/tokenService";
 
 export const api = axios.create({
-    baseURL: "http://192.168.1.3:8080/api/v1/"
+    baseURL: "http://172.20.10.2:8080/api/v1/"
 });
 
 api.interceptors.request.use(

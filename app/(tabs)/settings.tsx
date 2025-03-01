@@ -13,17 +13,17 @@ import { Ionicons } from '@expo/vector-icons';
 export default function Tab() {
     // Sample user data - replace with your actual user data source
     const [user, setUser] = useState({
-        name: 'Alex Johnson',
-        email: 'alex.johnson@example.com',
-        bio: 'A passionate developer and tech enthusiast.',
-        joinDate: '2024-11-15',
+        name: 'Nishan Tharaka',
+        email: 'nishantharaka2004@gmail.com',
+        bio: 'A passionate developer.',
+        joinDate: '2025-02-15',
         notesCount: 27,
         profileImage: null, // This would be a URI in a real app
         theme: 'white',
         notifications: true,
         syncEnabled: true,
-        address: '1234 Main Street, City, Country',
-        phoneNumber: '+1 234 567 890',
+        address: 'Kalutara,Sri lanka',
+        phoneNumber: '+94 -76 431 3575',
         socialLinks: {
             facebook: 'https://facebook.com/alexjohnson',
             twitter: 'https://twitter.com/alexjohnson'
