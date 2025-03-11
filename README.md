@@ -43,6 +43,7 @@ To learn more about developing your project with Expo, look at the following res
 - [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
 ## Join the community
+![WhatsApp Image 2025-03-11 at 22 29 59_8be9bc30](https://github.com/user-attachments/assets/580ea05b-eeeb-4bdd-a942-2c77175ece59)
 
 Join our community of developers creating universal apps.
 
